@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os.path
+import datetime
 
 
 class Debug():
@@ -32,9 +33,17 @@ def save_solution(day, part, solution):
     filename =  f'solutions/solution{day}_{part}'
     with open(filename, 'w') as f:
         f.write(str(solution))
+    hist_file = f'solutions/solution_history{day}_{part}'
+    with open(hist_file, 'a') as f:
+        f.write('\n------------- ' + str(datetime.datetime.now()) + ' -------------\n')
+        f.write(str(solution))
 
 
 def check_solution(day, part, candidate):
+    hist_file = f'solutions/solution_history{day}_{part}'
+    with open(hist_file, 'a') as f:
+        f.write('\n------------- ' + str(datetime.datetime.now()) + ' -------------\n')
+        f.write(str(candidate))
     filename =  f'solutions/solution{day}_{part}'
     if not os.path.isfile(filename):
         print(f'Day {day}, part {part} solution not present.')
