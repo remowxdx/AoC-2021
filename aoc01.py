@@ -23,7 +23,7 @@ def part1(data):
     prev_depth = data[0]
     for depth in data:
         if depth > prev_depth:
-            increments +=1
+            increments += 1
         prev_depth = depth
     return increments
 
@@ -38,7 +38,7 @@ def part2(data):
             continue
         depth_sum += depth - data[i - window_width]
         if depth_sum > prev_depth_sum:
-            increments +=1
+            increments += 1
         prev_depth_sum = depth_sum
     return increments
 
