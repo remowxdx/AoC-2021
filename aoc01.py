@@ -1,36 +1,73 @@
 #!/usr/bin/env python3
 
+from aoc import *
+
+pd = Debug(True)
+DAY = 1
+SOLVED_1 = True
+SOLVED_2 = True
 
 def get_input(filename):
-    with open(filename, 'r') as in_file:
-        depths = [int(depth) for depth in in_file.readlines()]
-    return depths
+    with open(filename, 'r') as f:
+        lines = f.read()
+    return [int(line) for line in lines.splitlines()]
 
+def test1(data):
+    return part1(data)
 
-def part1(depths):
-    incr = 0
-    prev_depth = depths[0]
-    for depth in depths:
+def test2(data):
+    return part2(data)
+
+def part1(data):
+    increments = 0
+    prev_depth = data[0]
+    for depth in data:
         if depth > prev_depth:
-            incr += 1
+            increments +=1
         prev_depth = depth
-    print(incr)
+    return increments
 
-
-def part2(depths):
-    incr = 0
-    prev_depth_sum = depths[0] + depths[1] + depths[2]
-    for i in range(len(depths)):
-        if i < 3:
+def part2(data):
+    window_width = 3
+    increments = 0
+    prev_depth_sum = 0
+    depth_sum = 0
+    for i, depth in enumerate(data):
+        if i < window_width:
+            depth_sum += depth
             continue
-        depth_sum = prev_depth_sum - depths[i - 3] + depths[i]
+        depth_sum += depth - data[i - window_width]
         if depth_sum > prev_depth_sum:
-            incr += 1
+            increments +=1
         prev_depth_sum = depth_sum
-    print(incr)
+    return increments
 
 if __name__ == '__main__':
-    i = get_input('input1')
-    # i = get_input('ex1')
-    part1(i)
-    part2(i)
+
+    test_input_1 = get_input(f'ex{DAY}')
+    print('Test Part 1:')
+    test_eq('Test 1.1', test1, 7, test_input_1)
+    print()
+
+    test_input_2 = get_input(f'ex{DAY}')
+    print('Test Part 2:')
+    test_eq('Test 2.1', test2, 5, test_input_2)
+    print()
+
+    data = get_input(f'input{DAY}')
+
+    r = part1(data)
+    if r is not None:
+        print('Part 1:', r)
+        if SOLVED_1:
+            check_solution(DAY, 1, r)
+        else:
+            save_solution(DAY, 1, r)
+
+    r = part2(data)
+    if r is not None:
+        print('Part 2:', r)
+        if SOLVED_2:
+            check_solution(DAY, 2, r)
+        else:
+            save_solution(DAY, 2, r)
