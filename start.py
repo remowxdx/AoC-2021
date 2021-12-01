@@ -20,7 +20,7 @@ def retrieve_input(day):
 
 
 def get_day():
-    if len(sys.argv <= 1):
+    if len(sys.argv) <= 1:
         return datetime.datetime.today().day
 
     arg = sys.argv[1]
@@ -34,8 +34,8 @@ def get_day():
 def write_template(day):
     filename = f'aoc{day:02}.py'
 
-    with open('aoc_templ.py', 'r') as file_base:
-        scaf = file_base.read()
+    with open('aoc_template.py', 'r') as template:
+        scaf = template.read()
 
     if not os.path.isfile(filename):
         with open(filename, 'w') as f:
