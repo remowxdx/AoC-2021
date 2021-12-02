@@ -7,28 +7,49 @@ DAY = 2
 SOLVED_1 = False
 SOLVED_2 = False
 
+
 def get_input(filename):
     with open(filename, 'r') as f:
         lines = f.read()
     return lines.splitlines()
 
+
+def move_submarine(data):
+    position = [0, 0]
+    for step in data:
+        command, s_length = step.split()
+        length = int(s_length)
+        if command == 'forward':
+            position[0] += length
+        elif command == 'down':
+            position[1] += length
+        elif command == 'up':
+            position[1] -= length
+        else:
+            raise InvalidArgument
+    return position
+
+
 def test1(data):
-    return 0
+    result = move_submarine(data)
+    return result[0] * result[1]
+
 
 def test2(data):
     return 0
 
 def part1(data):
-    return None
+    result = move_submarine(data)
+    return result[0] * result[1]
 
 def part2(data):
     return None
 
 if __name__ == '__main__':
 
-    test_input_1 = [1,2,3]
+    test_input_1 = get_input('ex2')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', test1, 150, test_input_1)
     print()
 
     test_input_2 = [4,5,6]
