@@ -30,20 +30,39 @@ def move_submarine(data):
     return position
 
 
+def real_move_submarine(data):
+    position = [0, 0, 0]
+    for step in data:
+        command, s_length = step.split()
+        length = int(s_length)
+        if command == 'forward':
+            position[0] += length
+            position[1] += length * position[2]
+        elif command == 'down':
+            position[2] += length
+        elif command == 'up':
+            position[2] -= length
+        else:
+            raise InvalidArgument
+    return position
+
+
 def test1(data):
     result = move_submarine(data)
     return result[0] * result[1]
 
 
 def test2(data):
-    return 0
+    result = real_move_submarine(data)
+    return result[0] * result[1]
 
 def part1(data):
     result = move_submarine(data)
     return result[0] * result[1]
 
 def part2(data):
-    return None
+    result = real_move_submarine(data)
+    return result[0] * result[1]
 
 if __name__ == '__main__':
 
@@ -52,9 +71,9 @@ if __name__ == '__main__':
     test_eq('Test 1.1', test1, 150, test_input_1)
     print()
 
-    test_input_2 = [4,5,6]
+    test_input_2 = get_input('ex2')
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 900, test_input_2)
     print()
 
     data = get_input(f'input{DAY}')
