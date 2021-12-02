@@ -2,6 +2,8 @@
 
 from aoc import *
 
+import cairo
+
 pd = Debug(True)
 DAY = 2
 SOLVED_1 = True
@@ -20,6 +22,7 @@ class Submarine:
     def __init__(self):
         self.horizontal = 0
         self.depth = 0
+        self.history = [(0, 0)]
 
     def do_step(self, command):
         if command.direction == 'forward':
@@ -30,6 +33,7 @@ class Submarine:
             self.depth -= command.length
         else:
             raise InvalidArgument
+        self.history.append((self.horizontal, self.depth))
 
     def summary(self):
         return self.depth * self.horizontal
@@ -56,6 +60,28 @@ class RealSubmarine(Submarine):
             self.aim -= command.length
         else:
             raise InvalidArgument
+        self.history.append((self.horizontal, self.depth))
+
+
+class SubmarineTracer:
+    def __init__(self, name):
+        self.name = name
+
+    def paint(self, points):
+        xs = [x for x, y in points]
+        ys = [y for x, y in points]
+        min_x = min(xs)
+        max_x = max(xs)
+        min_y = min(ys)
+        max_y = max(ys)
+
+        surface = cairo.SVGSurface(f"{self.name}.svg", max_x - min_x, max_y - min_y)
+        context = cairo.Context(surface)
+        context.set_line_width(1.0)
+        context.move_to(xs[0], ys[0])
+        for x, y in points:
+            context.line_to(x, y)
+        context.stroke()
 
 
 def get_input(filename):
@@ -68,7 +94,6 @@ def test1(data):
     s = Submarine()
     for line in data:
         s >> Command(line)
-    print(s)
     return s.summary()
 
 
@@ -76,7 +101,6 @@ def test2(data):
     s = RealSubmarine()
     for line in data:
         s >> Command(line)
-    print(s)
     return s.summary()
 
 
@@ -84,7 +108,8 @@ def part1(data):
     s = Submarine()
     for line in data:
         s >> Command(line)
-    print(s)
+    st = SubmarineTracer("day2_1")
+    st.paint(s.history)
     return s.summary()
 
 
@@ -92,7 +117,8 @@ def part2(data):
     s = RealSubmarine()
     for line in data:
         s >> Command(line)
-    print(s)
+    st = SubmarineTracer("day2_2")
+    st.paint(s.history)
     return s.summary()
 
 
