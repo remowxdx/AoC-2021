@@ -4,8 +4,58 @@ from aoc import *
 
 pd = Debug(True)
 DAY = 2
-SOLVED_1 = False
-SOLVED_2 = False
+SOLVED_1 = True
+SOLVED_2 = True
+
+
+class Command:
+    def __init__(self, command):
+        self.command = command
+        direction, s_length = command.split()
+        self.direction = direction
+        self.length = int(s_length)
+
+
+class Submarine:
+    def __init__(self):
+        self.horizontal = 0
+        self.depth = 0
+
+    def do_step(self, command):
+        if command.direction == 'forward':
+            self.horizontal += command.length
+        elif command.direction == 'down':
+            self.depth += command.length
+        elif command.direction == 'up':
+            self.depth -= command.length
+        else:
+            raise InvalidArgument
+
+    def summary(self):
+        return self.depth * self.horizontal
+
+    def __str__(self):
+        return f'Submarine is at position {self.horizontal} and depth {self.depth}'
+
+    def __rshift__(self, step):
+        self.do_step(step)
+
+
+class RealSubmarine(Submarine):
+    def __init__(self):
+        super().__init__()
+        self.aim = 0
+
+    def do_step(self, command):
+        if command.direction == 'forward':
+            self.horizontal += command.length
+            self.depth += self.aim * command.length
+        elif command.direction == 'down':
+            self.aim += command.length
+        elif command.direction == 'up':
+            self.aim -= command.length
+        else:
+            raise InvalidArgument
 
 
 def get_input(filename):
@@ -14,55 +64,37 @@ def get_input(filename):
     return lines.splitlines()
 
 
-def move_submarine(data):
-    position = [0, 0]
-    for step in data:
-        command, s_length = step.split()
-        length = int(s_length)
-        if command == 'forward':
-            position[0] += length
-        elif command == 'down':
-            position[1] += length
-        elif command == 'up':
-            position[1] -= length
-        else:
-            raise InvalidArgument
-    return position
-
-
-def real_move_submarine(data):
-    position = [0, 0, 0]
-    for step in data:
-        command, s_length = step.split()
-        length = int(s_length)
-        if command == 'forward':
-            position[0] += length
-            position[1] += length * position[2]
-        elif command == 'down':
-            position[2] += length
-        elif command == 'up':
-            position[2] -= length
-        else:
-            raise InvalidArgument
-    return position
-
-
 def test1(data):
-    result = move_submarine(data)
-    return result[0] * result[1]
+    s = Submarine()
+    for line in data:
+        s >> Command(line)
+    print(s)
+    return s.summary()
 
 
 def test2(data):
-    result = real_move_submarine(data)
-    return result[0] * result[1]
+    s = RealSubmarine()
+    for line in data:
+        s >> Command(line)
+    print(s)
+    return s.summary()
+
 
 def part1(data):
-    result = move_submarine(data)
-    return result[0] * result[1]
+    s = Submarine()
+    for line in data:
+        s >> Command(line)
+    print(s)
+    return s.summary()
+
 
 def part2(data):
-    result = real_move_submarine(data)
-    return result[0] * result[1]
+    s = RealSubmarine()
+    for line in data:
+        s >> Command(line)
+    print(s)
+    return s.summary()
+
 
 if __name__ == '__main__':
 
