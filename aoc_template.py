@@ -7,22 +7,28 @@ DAY = %%day%%
 SOLVED_1 = False
 SOLVED_2 = False
 
+
 def get_input(filename):
     with open(filename, 'r') as f:
         lines = f.read()
     return lines.splitlines()
 
+
 def test1(data):
     return 0
+
 
 def test2(data):
     return 0
 
+
 def part1(data):
     return None
 
+
 def part2(data):
     return None
+
 
 if __name__ == '__main__':
 
