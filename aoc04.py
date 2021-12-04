@@ -2,7 +2,7 @@
 
 from aoc import *
 
-pd = Debug(True)
+pd = Debug(False)
 DAY = 4
 SOLVED_1 = True
 SOLVED_2 = True
@@ -42,17 +42,16 @@ def play(draws, boards):
 
 
 def play2(draws, boards):
-    remaining = len(boards)
+    num_boards = len(boards)
     winner = set()
     for num in draws:
-        print(num)
+        pd(num)
         for b, board in enumerate(boards):
             if b in winner:
                 continue
             if mark_number(board, num):
-                remaining -= 1
                 winner.add(b)
-                if remaining == 0:
+                if len(winner) == num_boards:
                     return board, num
     return 0
 
@@ -108,7 +107,7 @@ def test2(data):
     boards = given_boards(data[2:])
     remaining = len(boards)
     board, num = play2(nums, boards)
-    print(board, num)
+    pd(board, num)
     # print(boards)
     return calc_result(board) * num
 
