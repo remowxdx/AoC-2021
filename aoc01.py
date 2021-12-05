@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from aoc import *
+import cairo
 
 pd = Debug(True)
 DAY = 1
@@ -42,6 +43,26 @@ def part2(data):
         prev_depth_sum = depth_sum
     return increments
 
+
+def draw(depths, img):
+    surface = cairo.SVGSurface(img, len(depths) + 1, max(depths))
+    ctx = cairo.Context(surface)
+
+    ctx.set_line_width(1)
+    ctx.move_to(0, depths[0])
+    for x, depth in enumerate(depths):
+        ctx.line_to(x, depth)
+    ctx.stroke()
+
+    ctx.set_source_rgba(0, 1.0, 0, 0.7)
+    ctx.move_to(0, depths[0])
+    for x in range(1, len(depths) - 1):
+        ctx.line_to(x, sum(depths[x-1:x+2]) / 3)
+    ctx.stroke()
+
+    surface.finish()
+
+
 if __name__ == '__main__':
 
     test_input_1 = get_input(f'ex{DAY}')
@@ -71,3 +92,5 @@ if __name__ == '__main__':
             check_solution(DAY, 2, r)
         else:
             save_solution(DAY, 2, r)
+
+    draw(data, 'images/day1.svg')
