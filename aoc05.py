@@ -48,21 +48,30 @@ def print_board(board):
         pd("".join([str(v) for v in line]))
 
 
+def draw_line(board, x0, y0, x1, y1):
+    dist = max(abs(x1 - x0), abs(y1 - y0))
+    if dist == 0:
+        board[y0][x0] += 1
+    dx = (x1 - x0) // dist
+    dy = (y1 - y0) // dist
+    for i in range(dist + 1):
+        board[y0 + dy * i][x0 + dx * i] += 1
+
+
 def draw_lines(lines, max_x, max_y):
-    board = [[0] * (max_x+1) for y in range(max_y+1)]
+    board = [[0] * (max_x + 1) for y in range(max_y + 1)]
     for line in lines:
         if is_vertical(line):
-            y = line[0][1]
-            x0 = min(line[0][0], line[1][0])
-            x1 = max(line[0][0], line[1][0])
-            for x in range(x0, x1 + 1):
-                board[y][x] += 1
+            draw_line(board, line[0][0], line[0][1], line[1][0], line[1][1])
         if is_horizontal(line):
-            x = line[0][0]
-            y0 = min(line[0][1], line[1][1])
-            y1 = max(line[0][1], line[1][1])
-            for y in range(y0, y1 + 1):
-                board[y][x] += 1
+            draw_line(board, line[0][0], line[0][1], line[1][0], line[1][1])
+    return board
+
+
+def draw_all_lines(lines, max_x, max_y):
+    board = [[0] * (max_x + 1) for y in range(max_y + 1)]
+    for line in lines:
+        draw_line(board, line[0][0], line[0][1], line[1][0], line[1][1])
     return board
 
 
@@ -82,7 +91,9 @@ def test1(data):
 
 
 def test2(data):
-    return 0
+    vent_lines, max_x, max_y = parse_input(data)
+    board = draw_all_lines(vent_lines, max_x, max_y)
+    return count_dangers(board)
 
 
 def part1(data):
@@ -90,7 +101,7 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    return test2(data)
 
 
 if __name__ == '__main__':
@@ -100,9 +111,9 @@ if __name__ == '__main__':
     test_eq('Test 1.1', test1, 5, test_input_1)
     print()
 
-    test_input_2 = [4,5,6]
+    test_input_2 = get_input('ex5')
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 12, test_input_2)
     print()
 
     data = get_input(f'input{DAY}')
