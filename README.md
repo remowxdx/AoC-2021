@@ -44,7 +44,7 @@ View the [lines of vents](images/day5.svg) of my input.
 In the code you can activate the visualization of the lines of vents with lines, circles or both.
 
 
-## Day 5
+## Day 6
 
 The [lanternfish invasion](https://adventofcode.com/2021/day/6)!
 
