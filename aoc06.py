@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from aoc import *
+import cairo
 
 pd = Debug(True)
 DAY = 6
@@ -32,12 +33,40 @@ def step(population):
     return new_population
 
 
-def pop_after(data, day):
+def draw_graph(name, graph):
+    surface = cairo.SVGSurface(name, 800, 600)
+    ctx = cairo.Context(surface)
+
+    scale_x = (800 - 100) / len(graph)
+    scale_y = (600 - 100) / max(graph)
+
+# Draw axis
+    ctx.move_to(50, 600 - 50)
+    ctx.line_to(800 - 50, 600 - 50)
+    ctx.stroke()
+    ctx.move_to(50, 600 - 50)
+    ctx.line_to(50, 50)
+    ctx.stroke()
+
+    ctx.set_source_rgb(1.0, 0.0, 0.0)
+    ctx.move_to(50, 600 - 50)
+    for x, y in enumerate(graph):
+        ctx.line_to(50 + x * scale_x, 600 - 50 - y * scale_y)
+    ctx.stroke()
+
+    surface.flush()
+    surface.finish()
+
+
+def pop_after(data, days):
     population = make_population(data)
+    graph = [sum(population)]
     pd(population)
-    for day in range(day):
+    for day in range(days):
         population = step(population)
+        graph.append(sum(population))
     pd(population)
+    draw_graph(f'images/day6_{days}.svg', graph)
     return sum(population)
 
 
