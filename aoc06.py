@@ -5,7 +5,7 @@ from aoc import *
 pd = Debug(True)
 DAY = 6
 SOLVED_1 = True
-SOLVED_2 = False
+SOLVED_2 = True
 
 
 def get_input(filename):
@@ -32,25 +32,29 @@ def step(population):
     return new_population
 
 
-def test1(data):
+def pop_after(data, day):
     population = make_population(data)
     pd(population)
-    for day in range(80):
+    for day in range(day):
         population = step(population)
     pd(population)
     return sum(population)
 
 
+def test1(data):
+    return pop_after(data, 80)
+
+
 def test2(data):
-    return 0
+    return pop_after(data, 256)
 
 
 def part1(data):
-    return test1(data)
+    return pop_after(data, 80)
 
 
 def part2(data):
-    return None
+    return pop_after(data, 256)
 
 
 if __name__ == '__main__':
@@ -60,9 +64,9 @@ if __name__ == '__main__':
     test_eq('Test 1.1', test1, 5934, test_input_1)
     print()
 
-    test_input_2 = [4,5,6]
+    test_input_2 = get_input('ex6')
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 26984457539, test_input_2)
     print()
 
     data = get_input(f'input{DAY}')
