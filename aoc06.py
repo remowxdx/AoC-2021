@@ -4,7 +4,7 @@ from aoc import *
 
 pd = Debug(True)
 DAY = 6
-SOLVED_1 = False
+SOLVED_1 = True
 SOLVED_2 = False
 
 
@@ -14,8 +14,31 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def make_population(data):
+    population = [0] * 9
+    for fish in data[0].split(','):
+        population[int(fish)] += 1
+    return population
+
+
+def step(population):
+    new_population = [0] * 9
+    for fish in range(9):
+        if fish == 0:
+            new_population[8] += population[0]
+            new_population[6] += population[0]
+        else:
+            new_population[fish - 1] += population[fish]
+    return new_population
+
+
 def test1(data):
-    return 0
+    population = make_population(data)
+    pd(population)
+    for day in range(80):
+        population = step(population)
+    pd(population)
+    return sum(population)
 
 
 def test2(data):
@@ -23,7 +46,7 @@ def test2(data):
 
 
 def part1(data):
-    return None
+    return test1(data)
 
 
 def part2(data):
@@ -32,9 +55,9 @@ def part2(data):
 
 if __name__ == '__main__':
 
-    test_input_1 = [1,2,3]
+    test_input_1 = get_input('ex6')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', test1, 5934, test_input_1)
     print()
 
     test_input_2 = [4,5,6]
