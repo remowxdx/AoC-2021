@@ -25,6 +25,14 @@ def fuel_cost(target, positions):
     return result
 
 
+def fuel_cost2(target, positions):
+    result = 0
+    for position in positions:
+        dist = abs(position - target)
+        result += dist * (dist + 1) // 2
+    return result
+
+
 def test1(data):
     positions = get_positions(data)
     costs = [fuel_cost(x, positions) for x in range(max(positions))]
@@ -32,7 +40,9 @@ def test1(data):
 
 
 def test2(data):
-    return 0
+    positions = get_positions(data)
+    costs = [fuel_cost2(x, positions) for x in range(max(positions))]
+    return min(costs)
 
 
 def part1(data):
@@ -42,7 +52,9 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    positions = get_positions(data)
+    costs = [fuel_cost2(x, positions) for x in range(max(positions))]
+    return min(costs)
 
 
 if __name__ == '__main__':
@@ -52,9 +64,9 @@ if __name__ == '__main__':
     test_eq('Test 1.1', test1, 37, test_input_1)
     print()
 
-    test_input_2 = [4,5,6]
+    test_input_2 = get_input('ex7')
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 168, test_input_2)
     print()
 
     data = get_input(f'input{DAY}')
