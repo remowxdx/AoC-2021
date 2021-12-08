@@ -61,3 +61,11 @@ Run away from the [whale](https://adventofcode.com/2021/day/7)! With the help of
 I graphed the total cost of the fuel for every target position (in red) and the number of
 crab in every position (black) for [part 1](images/day7_1.svg) and [part 2](images/day7_2.svg).
 In green you should see the position with the minimal cost.
+
+
+## Day 8
+
+Who wired the [seven-segment displays](https://adventofcode.com/2021/day/8)?
+
+Look at the displays [how they are and how they should be](images/day8_2.svg)!
+
