@@ -103,27 +103,45 @@ def try_wiring(wiring, signals):
     return True
 
 
-def perm_wirings(base, rests):
+def make_hints(signals):
+    result = dict((segment, set('abcdefg')) for segment in 'abcdefg')
+
+    for signal in signals:
+        wrong_signal_wirings = dict((segment, set()) for segment in 'abcdefg')
+        for segments in DIGITS:
+            if len(signal) == len(segments):
+                for segment in signal:
+                    wrong_signal_wirings[segment].difference_update(set(segments))
+        for segment in 'abcdefg':
+            result[segment].difference_update(wrong_signal_wirings[segment])
+    return result
+
+
+def perm_wirings(hints, base, rests):
     if len(rests) == 0:
         return [base]
 
     result = []
+    idx = 'abcdefg'
     for rest in rests:
+        if rest not in hints[idx[len(base) - 1]]:
+            continue
         next_base = base[:]
         next_base.append(rest)
         next_rests = rests[:]
         next_rests.remove(rest)
-        result.extend(perm_wirings(next_base, next_rests))
+        result.extend(perm_wirings(hints, next_base, next_rests))
     return result
 
 
-def make_wirings():
+def make_wirings(hints):
     digits = list('abcdefg')
-    return perm_wirings([], digits)
+    return perm_wirings(hints, [], digits)
 
 
 def find_wiring(signals):
-    wirings = make_wirings()
+    hints = make_hints(signals)
+    wirings = make_wirings(hints)
     for wiring in wirings:
         if try_wiring(wiring, signals):
             return wiring
