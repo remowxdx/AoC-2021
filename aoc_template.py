@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from aoc import *
+from aoc import check_solution, save_solution, test_eq, Debug
 
 pd = Debug(True)
 DAY = %%day%%
@@ -32,14 +32,13 @@ def part2(data):
 
 if __name__ == '__main__':
 
-    test_input_1 = [1,2,3]
+    test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
     test_eq('Test 1.1', test1, 42, test_input_1)
     print()
 
-    test_input_2 = [4,5,6]
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 42, test_input_1)
     print()
 
     data = get_input(f'input{DAY}')
