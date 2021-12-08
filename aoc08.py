@@ -4,8 +4,8 @@ from aoc import *
 
 pd = Debug(True)
 DAY = 8
-SOLVED_1 = False
-SOLVED_2 = False
+SOLVED_1 = True
+SOLVED_2 = True
 
 
 def get_input(filename):
@@ -51,6 +51,63 @@ def count_output_digits_with_len(notes, lens):
     return count
 
 
+def decode(signal, wiring):
+    result = []
+    for digit in signal:
+        result.append(wiring[ord(digit) - ord('a')])
+    return ''.join(sorted(result))
+
+
+def try_wiring(wiring, signals):
+    for signal in signals:
+        if decode(signal, wiring) not in DIGITS:
+            return False
+    return True
+
+
+def perm_wirings(base, rest):
+    if len(rest) == 0:
+        return [base]
+
+    result = []
+    for r in rest:
+        next_base = base[:]
+        next_base.append(r)
+        next_rest = rest[:]
+        next_rest.remove(r)
+        result.extend(perm_wirings(next_base, next_rest))
+    return result
+
+
+def make_wirings():
+    digits = list('abcdefg')
+    return perm_wirings([], digits)
+
+
+def find_wiring(signals):
+    wirings = make_wirings()
+    for wiring in wirings:
+        if try_wiring(wiring, signals):
+            return wiring
+    return 'No'
+
+
+def decode_display(outputs, wiring):
+    display = []
+    for output in outputs:
+        display.append(decode(output, wiring))
+    return display
+
+
+def to_number(digits):
+    number = 0
+    for digit in digits:
+        for num, repre in enumerate(DIGITS):
+            if digit == repre:
+                number = number * 10 + num
+    return number
+
+
 def test1(data):
     notes = parse_notes(data)
     lens = digit_lens()
@@ -59,7 +116,13 @@ def test1(data):
 
 
 def test2(data):
-    return 0
+    notes = parse_notes(data)
+    total = 0
+    for signals, digits in notes:
+        wiring = find_wiring(signals)
+        real_digits = decode_display(digits, wiring)
+        total += to_number(real_digits)
+    return total
 
 
 def part1(data):
@@ -67,7 +130,7 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    return test2(data)
 
 
 if __name__ == '__main__':
@@ -80,7 +143,8 @@ if __name__ == '__main__':
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_2)
+    test_eq('Test 2.1', test2, 5353, test_input_1)
+    test_eq('Test 2.1', test2, 61229, test_input_2)
     print()
 
     data = get_input(f'input{DAY}')
