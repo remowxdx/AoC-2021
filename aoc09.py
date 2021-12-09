@@ -4,7 +4,7 @@ from aoc import check_solution, save_solution, test_eq, Debug
 
 pd = Debug(True)
 DAY = 9
-SOLVED_1 = False
+SOLVED_1 = True
 SOLVED_2 = False
 
 
@@ -14,8 +14,34 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def make_map(lines):
+    return [[int(num) for num in line] for line in lines]
+
+
+def risk_level(points):
+    return sum(points) + len(points)
+
+
+def find_low_points(height_map):
+    result = []
+    for y, row in enumerate(height_map):
+        for x, height in enumerate(row):
+            if y > 0 and height_map[y - 1][x] <= height:
+                continue
+            if y < len(height_map) - 1 and height_map[y + 1][x] <= height:
+                continue
+            if x > 0 and height_map[y][x - 1] <= height:
+                continue
+            if x < len(row) - 1 and height_map[y][x + 1] <= height:
+                continue
+            result.append(height)
+    return result
+
+
 def test1(data):
-    return 0
+    height_map = make_map(data)
+    low_points = find_low_points(height_map)
+    return risk_level(low_points)
 
 
 def test2(data):
@@ -23,7 +49,7 @@ def test2(data):
 
 
 def part1(data):
-    return None
+    return test1(data)
 
 
 def part2(data):
@@ -34,7 +60,7 @@ if __name__ == '__main__':
 
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', test1, 15, test_input_1)
     print()
 
     print('Test Part 2:')
