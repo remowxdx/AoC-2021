@@ -69,3 +69,15 @@ Who wired the [seven-segment displays](https://adventofcode.com/2021/day/8)?
 
 Look at the displays [how they are and how they should be](images/day8_2.svg)!
 
+
+## Day 9
+
+Down in the [lava tubes](https://adventofcode.com/2021/day/9)!
+
+Look at the [caves map](images/day9_1.svg), where red is low, green is high.
+The dots are local lowest points with yellow high risk level and blue low
+risk level.
+
+It's now late and don't have time for the second part visualization.
+Maybe tomorrow.
+

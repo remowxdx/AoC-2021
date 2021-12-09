@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import cairo
+import math
 from aoc import check_solution, save_solution, test_eq, Debug
 
 pd = Debug(True)
@@ -38,9 +40,32 @@ def find_low_points(height_map):
     return result
 
 
+def draw_height_map(height_map, low_points):
+    surface = cairo.SVGSurface(
+        'images/day9_1.svg', len(height_map[0]) * 4, len(height_map) * 4)
+    ctx = cairo.Context(surface)
+    ctx.set_line_width(1)
+    for y, row in enumerate(height_map):
+        for x, height in enumerate(row):
+            ctx.set_source_rgb(1 - height / 9, height / 9, 0)
+            ctx.rectangle(x * 4, y * 4, 4, 4)
+            ctx.fill()
+
+    for y, x in low_points:
+        height = height_map[y][x]
+        ctx.set_source_rgb(1 - height / 9, 1 - height / 9, height / 9)
+        # ctx.rectangle(x * 4, y * 4, 4, 4)
+        ctx.arc(x * 4 + 2, y * 4 + 2, 2, 0, 2 * math.pi)
+        ctx.fill()
+
+    surface.flush()
+    surface.finish()
+
+
 def test1(data):
     height_map = make_map(data)
     low_points = find_low_points(height_map)
+    draw_height_map(height_map, low_points)
     return risk_level(height_map, low_points)
 
 
@@ -66,7 +91,6 @@ def find_basin_size(height_map, low_point):
         if x < len(height_map[y]) - 1 and (y, x + 1) not in points:
             points.append((y, x + 1))
             count += 1
-    print('LP:', low_point, count)
     return count
 
 
