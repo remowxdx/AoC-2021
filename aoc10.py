@@ -4,7 +4,7 @@ from aoc import check_solution, save_solution, test_eq, Debug
 
 pd = Debug(True)
 DAY = 10
-SOLVED_1 = False
+SOLVED_1 = True
 SOLVED_2 = False
 
 
@@ -14,8 +14,68 @@ def get_input(filename):
     return lines.splitlines()
 
 
+ENCLOSERS = {'(': ')', '[': ']', '{': '}', '<': '>'}
+
+
+class IncompleteChunk(Exception):
+    pass
+
+
+class IllegalCloser(Exception):
+    def __init__(self, msg, illegal_closer):
+        super().__init__(self, msg)
+        self.illegal_closer = illegal_closer
+
+
+def parse_chunk_list(text):
+    if len(text) == 0:
+        return [], None
+
+    if text[0] not in ENCLOSERS.keys():
+        raise Exception(f'Expected opener, found {text[0]}.')
+
+    if len(text) == 1:
+        raise IncompleteChunk
+
+    chunk = {}
+    chunk['opener'] = text[0]
+    chunk['content'] = []
+
+    rest = text[1:]
+    while rest[0] in ENCLOSERS.keys():
+        content, rest = parse_chunk_list(rest)
+        chunk['content'].append(content)
+        if len(rest) == 0:
+            raise IncompleteChunk
+
+    if rest[0] == ENCLOSERS[chunk['opener']]:
+        chunk['closer'] = rest[0]
+        return chunk, rest[1:]
+    if rest[0] in ENCLOSERS.values():
+        raise IllegalCloser(
+            f"Expected {ENCLOSERS[chunk['opener']]}, found {rest[0]} {rest}.",
+            rest[0])
+    raise Exception('Invalid character')
+
+
 def test1(data):
-    return 0
+    points = {
+        ')': 3,
+        ']': 57,
+        '}': 1197,
+        '>': 25137,
+    }
+
+    score = 0
+    for line in data:
+        try:
+            chunk, rest = parse_chunk_list(line)
+        except IllegalCloser as e:
+            score += points[e.illegal_closer]
+        except IncompleteChunk:
+            # print('Incomplete chunk')
+            pass
+    return score
 
 
 def test2(data):
@@ -23,7 +83,7 @@ def test2(data):
 
 
 def part1(data):
-    return None
+    return test1(data)
 
 
 def part2(data):
@@ -34,7 +94,7 @@ if __name__ == '__main__':
 
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', test1, 26397, test_input_1)
     print()
 
     print('Test Part 2:')
