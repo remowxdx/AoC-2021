@@ -5,7 +5,7 @@ from aoc import check_solution, save_solution, test_eq, Debug
 pd = Debug(True)
 DAY = 10
 SOLVED_1 = True
-SOLVED_2 = False
+SOLVED_2 = True
 
 
 def get_input(filename):
@@ -18,7 +18,9 @@ ENCLOSERS = {'(': ')', '[': ']', '{': '}', '<': '>'}
 
 
 class IncompleteChunk(Exception):
-    pass
+    def __init__(self, msg, missing_closer):
+        super().__init__(self, msg)
+        self.missing_closer = missing_closer
 
 
 class IllegalCloser(Exception):
@@ -29,28 +31,36 @@ class IllegalCloser(Exception):
 
 def parse_chunk_list(text):
     if len(text) == 0:
-        return [], None
+        return [], None, []
 
     if text[0] not in ENCLOSERS.keys():
         raise Exception(f'Expected opener, found {text[0]}.')
 
-    if len(text) == 1:
-        raise IncompleteChunk
-
     chunk = {}
     chunk['opener'] = text[0]
+    closer = ENCLOSERS[text[0]]
     chunk['content'] = []
+    completed = []
 
     rest = text[1:]
+
+    if len(rest) == 0:
+        chunk['closer'] = closer
+        completed.append(closer)
+        return chunk, rest, completed
+
     while rest[0] in ENCLOSERS.keys():
-        content, rest = parse_chunk_list(rest)
+        content, rest, compl = parse_chunk_list(rest)
+        completed.extend(compl)
         chunk['content'].append(content)
         if len(rest) == 0:
-            raise IncompleteChunk
+            chunk['closer'] = closer
+            completed.append(closer)
+            return chunk, rest, completed
 
-    if rest[0] == ENCLOSERS[chunk['opener']]:
+    if rest[0] == closer:
         chunk['closer'] = rest[0]
-        return chunk, rest[1:]
+        return chunk, rest[1:], completed
     if rest[0] in ENCLOSERS.values():
         raise IllegalCloser(
             f"Expected {ENCLOSERS[chunk['opener']]}, found {rest[0]} {rest}.",
@@ -69,17 +79,39 @@ def test1(data):
     score = 0
     for line in data:
         try:
-            chunk, rest = parse_chunk_list(line)
+            chunk, rest, completed = parse_chunk_list(line)
         except IllegalCloser as e:
             score += points[e.illegal_closer]
-        except IncompleteChunk:
-            # print('Incomplete chunk')
-            pass
     return score
 
 
 def test2(data):
-    return 0
+    points = {
+        ')': 1,
+        ']': 2,
+        '}': 3,
+        '>': 4,
+    }
+
+    scores = []
+    for line in data:
+        try:
+            completed = []
+            rest = line
+            while len(rest) > 0:
+                chunk, rest, compl = parse_chunk_list(rest)
+                completed.extend(compl)
+            print(line, completed)
+            score = 0
+            for closer in completed:
+                score = score * 5 + points[closer]
+            scores.append(score)
+        except IllegalCloser as e:
+            pass
+    sorted_scores = sorted(scores)
+    print(scores)
+    print(sorted_scores)
+    return sorted_scores[(len(scores) - 1) // 2]
 
 
 def part1(data):
@@ -87,7 +119,7 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    return test2(data)
 
 
 if __name__ == '__main__':
@@ -98,7 +130,7 @@ if __name__ == '__main__':
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_1)
+    test_eq('Test 2.1', test2, 288957, test_input_1)
     print()
 
     data = get_input(f'input{DAY}')
