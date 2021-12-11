@@ -31,8 +31,7 @@ def update(cave):
     return flashes
 
 
-def step(cave):
-    flashes = update(cave)
+def do_flashes(cave, flashes):
     neighbors = [
         (-1, -1),
         (0, -1),
@@ -52,10 +51,21 @@ def step(cave):
             cave[ny][nx] += 1
             if cave[ny][nx] == 10:
                 flashes.append((ny, nx))
+    return flashes
 
+
+def reset_flashed(cave, flashes):
     for y, x in flashes:
         cave[y][x] = 0
     return len(flashes)
+
+
+def step(cave):
+    flashes = update(cave)
+    flashes = do_flashes(cave, flashes)
+    num_flashed = reset_flashed(cave, flashes)
+    return num_flashed
+
 
 def print_cave(cave):
     for row in cave:
@@ -84,8 +94,8 @@ def part1(data):
 
 
 def part2(data):
-    return test2(data)
     return None
+    return test2(data)
 
 
 if __name__ == '__main__':
