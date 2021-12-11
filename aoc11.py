@@ -71,14 +71,20 @@ def test1(data):
 
 
 def test2(data):
-    return 0
+    cave = parse_cave(data)
+    i = 1
+    while step(cave) < 100:
+        i += 1
+    return i
 
 
 def part1(data):
+    return None
     return test1(data)
 
 
 def part2(data):
+    return test2(data)
     return None
 
 
@@ -90,7 +96,7 @@ if __name__ == '__main__':
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_1)
+    test_eq('Test 2.1', test2, 195, test_input_1)
     print()
 
     data = get_input(f'input{DAY}')
