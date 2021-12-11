@@ -17,55 +17,21 @@ def get_input(filename):
 ENCLOSERS = {'(': ')', '[': ']', '{': '}', '<': '>'}
 
 
-class IncompleteChunk(Exception):
-    def __init__(self, msg, missing_closer):
-        super().__init__(self, msg)
-        self.missing_closer = missing_closer
-
-
-class IllegalCloser(Exception):
-    def __init__(self, msg, illegal_closer):
-        super().__init__(self, msg)
-        self.illegal_closer = illegal_closer
-
-
-def parse_chunk_list(text):
-    if len(text) == 0:
-        return [], None, []
-
-    if text[0] not in ENCLOSERS.keys():
-        raise Exception(f'Expected opener, found {text[0]}.')
-
-    chunk = {}
-    chunk['opener'] = text[0]
-    closer = ENCLOSERS[text[0]]
-    chunk['content'] = []
-    completed = []
-
-    rest = text[1:]
-
-    if len(rest) == 0:
-        chunk['closer'] = closer
-        completed.append(closer)
-        return chunk, rest, completed
-
-    while rest[0] in ENCLOSERS.keys():
-        content, rest, compl = parse_chunk_list(rest)
-        completed.extend(compl)
-        chunk['content'].append(content)
-        if len(rest) == 0:
-            chunk['closer'] = closer
-            completed.append(closer)
-            return chunk, rest, completed
-
-    if rest[0] == closer:
-        chunk['closer'] = rest[0]
-        return chunk, rest[1:], completed
-    if rest[0] in ENCLOSERS.values():
-        raise IllegalCloser(
-            f"Expected {ENCLOSERS[chunk['opener']]}, found {rest[0]} {rest}.",
-            rest[0])
-    raise Exception('Invalid character')
+def parse_chunk(text):
+    chunk_stack = []
+    for char in text:
+        if char in ENCLOSERS.keys():
+            chunk_stack.append(char)
+            continue
+        if char in ENCLOSERS.values():
+            last = chunk_stack.pop()
+            if char == ENCLOSERS[last]:
+                continue
+            return chunk_stack, char, f'Mismatch'
+        return chunk_stack, char, 'Illegal'
+    if len(chunk_stack) == 0:
+        return chunk_stack, None, 'OK'
+    return chunk_stack, None, 'Incomplete'
 
 
 def test1(data):
@@ -78,10 +44,9 @@ def test1(data):
 
     score = 0
     for line in data:
-        try:
-            chunk, rest, completed = parse_chunk_list(line)
-        except IllegalCloser as e:
-            score += points[e.illegal_closer]
+        chunk_stack, char, msg = parse_chunk(line)
+        if msg == 'Mismatch':
+            score += points[char]
     return score
 
 
@@ -95,22 +60,14 @@ def test2(data):
 
     scores = []
     for line in data:
-        try:
-            completed = []
-            rest = line
-            while len(rest) > 0:
-                chunk, rest, compl = parse_chunk_list(rest)
-                completed.extend(compl)
-            print(line, completed)
+        chunk_stack, _, msg = parse_chunk(line)
+        if msg == 'Incomplete':
             score = 0
-            for closer in completed:
+            while len(chunk_stack) > 0:
+                closer = ENCLOSERS[chunk_stack.pop()]
                 score = score * 5 + points[closer]
             scores.append(score)
-        except IllegalCloser as e:
-            pass
-    sorted_scores = sorted(scores)
-    print(scores)
-    print(sorted_scores)
+    sorted_scores = list(sorted(scores))
     return sorted_scores[(len(scores) - 1) // 2]
 
 

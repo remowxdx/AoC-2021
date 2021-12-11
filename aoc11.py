@@ -5,7 +5,7 @@ from aoc import check_solution, save_solution, test_eq, Debug
 pd = Debug(True)
 DAY = 11
 SOLVED_1 = True
-SOLVED_2 = False
+SOLVED_2 = True
 
 
 def get_input(filename):
