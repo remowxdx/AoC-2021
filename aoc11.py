@@ -4,7 +4,7 @@ from aoc import check_solution, save_solution, test_eq, Debug
 
 pd = Debug(True)
 DAY = 11
-SOLVED_1 = False
+SOLVED_1 = True
 SOLVED_2 = False
 
 
@@ -14,8 +14,60 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def parse_cave(lines):
+    cave = []
+    for line in lines:
+        cave.append([int(c) for c in line])
+    return cave
+
+
+def update(cave):
+    flashes = []
+    for y, row in enumerate(cave):
+        for x, octopus in enumerate(row):
+            cave[y][x] += 1
+            if cave[y][x] == 10:
+                flashes.append((y, x))
+    return flashes
+
+
+def step(cave):
+    flashes = update(cave)
+    neighbors = [
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (1, 0),
+        (1, 1),
+        (0, 1),
+        (-1, 1),
+        (-1, 0),
+        ]
+    for y, x in flashes:
+        for dy, dx in neighbors:
+            nx = x + dx
+            ny = y + dy
+            if nx < 0 or ny < 0 or nx >= len(cave[y]) or ny >= len(cave):
+                continue
+            cave[ny][nx] += 1
+            if cave[ny][nx] == 10:
+                flashes.append((ny, nx))
+
+    for y, x in flashes:
+        cave[y][x] = 0
+    return len(flashes)
+
+def print_cave(cave):
+    for row in cave:
+        print("".join([str(octopus) for octopus in row]))
+
+
 def test1(data):
-    return 0
+    cave = parse_cave(data)
+    flashes = 0
+    for i in range(100):
+        flashes += step(cave)
+    return flashes
 
 
 def test2(data):
@@ -23,7 +75,7 @@ def test2(data):
 
 
 def part1(data):
-    return None
+    return test1(data)
 
 
 def part2(data):
@@ -34,7 +86,7 @@ if __name__ == '__main__':
 
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', test1, 1656, test_input_1)
     print()
 
     print('Test Part 2:')
