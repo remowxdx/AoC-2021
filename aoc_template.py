@@ -1,25 +1,14 @@
 #!/usr/bin/env python3
 
-from aoc import check_solution, save_solution, test_eq, Debug
+from aoc import check_solution, save_solution, test_eq
 
-pd = Debug(True)
 DAY = %%day%%
-SOLVED_1 = False
-SOLVED_2 = False
 
 
 def get_input(filename):
-    with open(filename, 'r') as f:
-        lines = f.read()
+    with open(filename, 'r') as input_file:
+        lines = input_file.read()
     return lines.splitlines()
-
-
-def test1(data):
-    return 0
-
-
-def test2(data):
-    return 0
 
 
 def part1(data):
@@ -30,31 +19,44 @@ def part2(data):
     return None
 
 
-if __name__ == '__main__':
-
+def run_tests():
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', test1, 42, test_input_1)
+    test_eq('Test 1.1', part1, 42, test_input_1)
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', test2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 42, test_input_1)
     print()
 
+
+def run_part1(solved):
     data = get_input(f'input{DAY}')
 
-    r = part1(data)
-    if r is not None:
-        print('Part 1:', r)
-        if SOLVED_1:
-            check_solution(DAY, 1, r)
-        else:
-            save_solution(DAY, 1, r)
+    result1 = part1(data)
+    print('Part 1:', result1)
+    if solved:
+        check_solution(DAY, 1, result1)
+    else:
+        save_solution(DAY, 1, result1)
 
-    r = part2(data)
-    if r is not None:
-        print('Part 2:', r)
-        if SOLVED_2:
-            check_solution(DAY, 2, r)
-        else:
-            save_solution(DAY, 2, r)
+
+def run_part2(solved):
+    data = get_input(f'input{DAY}')
+
+    result2 = part2(data)
+    print('Part 2:', result2)
+    if solved:
+        check_solution(DAY, 2, result2)
+    else:
+        save_solution(DAY, 2, result2)
+
+
+def main():
+    run_tests()
+    # run_part1(False)
+    # run_part2(False)
+
+
+if __name__ == '__main__':
+    main()
