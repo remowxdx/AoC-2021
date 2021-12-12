@@ -26,9 +26,6 @@ def make_caves(lines):
 
 def find_paths(caves, from_, to, visited):
 
-    if from_ in visited:
-        return None
-
     if from_ == to:
         return [[from_, ], ]
 
@@ -51,6 +48,34 @@ def find_paths(caves, from_, to, visited):
     return new_paths
 
 
+def find_paths_2(caves, from_, to, visited, jolly):
+
+    if from_ == to:
+        return [[from_, ], ]
+
+    if from_.islower():
+        new_visited = visited.copy()
+        new_visited.add(from_)
+    else:
+        new_visited = visited
+
+    new_paths = []
+    for next_ in caves[from_]:
+        new_jolly = jolly
+        if next_ in visited:
+            if new_jolly is None and next_ not in ['start', 'end']:
+                new_jolly = next_
+            else:
+                continue
+
+        for path in find_paths_2(caves, next_, to, new_visited, new_jolly):
+            new_path = path[:]
+            new_path.append(from_)
+            new_paths.append(new_path)
+
+    return new_paths
+
+
 def part1(data):
     caves = make_caves(data)
     paths = find_paths(caves, 'start', 'end', set())
@@ -58,7 +83,10 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    caves = make_caves(data)
+    paths = find_paths_2(caves, 'start', 'end', set(), None)
+    # print("\n".join(sorted([",".join(reversed(path)) for path in paths])))
+    return len(paths)
 
 
 def run_tests():
@@ -72,7 +100,9 @@ def run_tests():
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', part2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 36, test_input_1)
+    test_eq('Test 2.2', part2, 103, test_input_2)
+    test_eq('Test 2.3', part2, 3509, test_input_3)
     print()
 
 
@@ -101,7 +131,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(True)
 
 
 if __name__ == '__main__':
