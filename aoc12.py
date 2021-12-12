@@ -11,8 +11,50 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def make_caves(lines):
+    caves = {}
+    for line in lines:
+        from_, to = line.split('-')
+        if from_ not in caves:
+            caves[from_] = []
+        if to not in caves:
+            caves[to] = []
+        caves[from_].append(to)
+        caves[to].append(from_)
+    return caves
+
+
+def find_paths(caves, from_, to, visited):
+
+    if from_ in visited:
+        return None
+
+    if from_ == to:
+        return [[from_, ], ]
+
+    if from_.islower():
+        new_visited = visited.copy()
+        new_visited.add(from_)
+    else:
+        new_visited = visited
+
+    new_paths = []
+    for next_ in caves[from_]:
+
+        if next_ in visited:
+            continue
+
+        for path in find_paths(caves, next_, to, new_visited):
+            new_path = path[:]
+            new_path.append(from_)
+            new_paths.append(new_path)
+    return new_paths
+
+
 def part1(data):
-    return None
+    caves = make_caves(data)
+    paths = find_paths(caves, 'start', 'end', set())
+    return len(paths)
 
 
 def part2(data):
@@ -58,7 +100,7 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    # run_part1(False)
+    run_part1(True)
     # run_part2(False)
 
 
