@@ -37,17 +37,18 @@ def link_force(caves_pos, from_, to):
         return (0, 0)
 
     g = 1.0
-    l = 40
+    link_length = 40
     k = 0.1
     pos_force = (delta_pos[0] / d ** 1 * g, delta_pos[1] / d ** 1 * g)
 
     if to in caves_pos[from_][2]:
-        link_force = (k * delta_pos[0] * (l - d) / d, k * delta_pos[1] * (l - d) / d)
+        link_force = (
+            k * delta_pos[0] * (link_length - d) / d,
+            k * delta_pos[1] * (link_length - d) / d)
     else:
         link_force = (0, 0)
 
-    force = sum_forces(pos_force, link_force)
-    return force
+    return sum_forces(pos_force, link_force)
 
 
 def sum_forces(force1, force2):
@@ -85,40 +86,23 @@ def move_caves(caves):
                 if cave == cave_1:
                     continue
                 force = sum_forces(force, link_force(caves_pos, cave, cave_1))
-            dt = 0.1
+            delta_t = 0.1
             damp = 0.99
             if vel[0] ** 2 + vel[1] ** 2 > 0.001:
                 moving = True
-            new_vel = (damp * vel[0] + force[0] * dt, damp * vel[1] + force[1] * dt)
-            new_pos = (pos[0] + new_vel[0] * dt, pos[1] + new_vel[1] * dt)
+            new_vel = (
+                damp * vel[0] + force[0] * delta_t,
+                damp * vel[1] + force[1] * delta_t)
+            new_pos = (
+                pos[0] + new_vel[0] * delta_t,
+                pos[1] + new_vel[1] * delta_t)
             new_caves_pos[cave] = (new_pos, new_vel, links)
         caves_pos = new_caves_pos
 
     return caves_pos
 
 
-def draw_caves(caves):
-    surface = cairo.SVGSurface('images/day12.svg', 800, 600)
-    ctx = cairo.Context(surface)
-
-    ctx.select_font_face("Sans Serif", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
-    ctx.set_font_size(10)
-
-    caves_pos = move_caves(caves)
-    left = right = caves_pos['start'][0][0]
-    top = bottom = caves_pos['start'][0][1]
-    for cave, pos_links in caves_pos.items():
-        pos, _vel, links = pos_links
-        if pos[0] < left:
-            left = pos[0]
-        if pos[0] > right:
-            right = pos[0]
-        if pos[1] < top:
-            top = pos[1]
-        if pos[1] > bottom:
-            bottom = pos[1]
-    print(left, right, top, bottom)
-
+def draw_caves_links(ctx, caves_pos):
     ctx.set_source_rgb(0.0, 0.0, 1.0)
     for cave, pos_links in caves_pos.items():
         pos, vel, links = pos_links
@@ -127,6 +111,8 @@ def draw_caves(caves):
             ctx.line_to(caves_pos[link][0][0], caves_pos[link][0][1])
         ctx.stroke()
 
+
+def draw_caves(ctx, caves_pos):
     ctx.set_source_rgb(1.0, 0.0, 0.0)
     for cave, pos_links in caves_pos.items():
         pos, vel, links = pos_links
@@ -137,6 +123,8 @@ def draw_caves(caves):
         ctx.arc(pos[0], pos[1], radius, 0, 2 * math.pi)
         ctx.fill()
 
+
+def draw_caves_names(ctx, caves_pos):
     ctx.set_source_rgb(1.0, 0.0, 0.0)
     for cave, pos_links in caves_pos.items():
         pos, vel, links = pos_links
@@ -147,6 +135,23 @@ def draw_caves(caves):
             up = 20
         ctx.move_to(pos[0] - 8, pos[1] - up)
         ctx.show_text(cave)
+
+
+def draw_caves_map(caves):
+    surface = cairo.SVGSurface('images/day12.svg', 800, 600)
+    ctx = cairo.Context(surface)
+
+    ctx.select_font_face(
+        "Sans Serif",
+        cairo.FONT_SLANT_NORMAL,
+        cairo.FONT_WEIGHT_NORMAL)
+    ctx.set_font_size(10)
+
+    caves_pos = move_caves(caves)
+
+    draw_caves_links(ctx, caves_pos)
+    draw_caves(ctx, caves_pos)
+    draw_caves_names(ctx, caves_pos)
 
     surface.flush()
     surface.finish()
@@ -206,7 +211,7 @@ def find_paths_2(caves, from_, to, visited, jolly):
 
 def part1(data):
     caves = make_caves(data)
-    draw_caves(caves)
+    draw_caves_map(caves)
     paths = find_paths(caves, 'start', 'end', set())
     return len(paths)
 
