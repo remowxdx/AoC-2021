@@ -81,3 +81,25 @@ risk level.
 It's now late and don't have time for the second part visualization.
 Maybe tomorrow.
 
+
+## Day 10
+
+The same who wired the seven-segment displays, also programmed
+the [navigation subsystem](https://adventofcode.com/2021/day/10)!
+
+Today no visualization.
+
+
+## Day 11
+
+Encounter with the [flashing octopuses](https://adventofcode.com/2021/day/11)!
+
+Today no visualization either.
+
+
+## Day 12
+
+Finding the [paths to the exit](https://adventofcode.com/2021/day/12)!
+
+Look at [map of the caves](images/day12.svg).
+
