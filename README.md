@@ -103,3 +103,9 @@ Finding the [paths to the exit](https://adventofcode.com/2021/day/12)!
 
 Look at [map of the caves](images/day12.svg).
 
+
+## Day 13
+
+Finding the [infrared camera code](https://adventofcode.com/2021/day/13)!
+
+Today I simply drew every step of the [transparent dotted paper](images/day13.svg).
