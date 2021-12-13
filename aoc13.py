@@ -11,8 +11,57 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def paper_and_instructions(lines):
+    paper = set()
+    instructions = []
+    status = 'dots'
+    for line in lines:
+        if len(line) == 0:
+            status = 'folds'
+            continue
+
+        if status == 'dots':
+            x_s, y_s = line.split(',')
+            paper.add((int(x_s), int(y_s)))
+
+        elif status == 'folds':
+            direction, n_s = line[11:].split('=')
+            instructions.append((direction, int(n_s)))
+    return paper, instructions
+
+
+def fold_vert(paper, y_fold):
+    folded_paper = set()
+    for x, y in paper:
+        if y > y_fold:
+            folded_paper.add((x, 2 * y_fold - y))
+        else:
+            folded_paper.add((x, y))
+    return folded_paper
+
+
+def fold_horiz(paper, x_fold):
+    folded_paper = set()
+    for x, y in paper:
+        if x > x_fold:
+            folded_paper.add((2 * x_fold - x, y))
+        else:
+            folded_paper.add((x, y))
+    return folded_paper
+
+
 def part1(data):
-    return None
+    paper, instructions = paper_and_instructions(data)
+    # print(paper)
+    # print(instructions)
+    for instruction in instructions[:1]:
+        if instruction[0] == 'x':
+            paper = fold_horiz(paper, instructions[0][1])
+        elif instruction[0] == 'y':
+            paper = fold_vert(paper, instructions[0][1])
+        else:
+            raise Exception(f'Unknown fold ({instruction[0]}).')
+    return len(paper)
 
 
 def part2(data):
@@ -22,7 +71,7 @@ def part2(data):
 def run_tests():
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', part1, 42, test_input_1)
+    test_eq('Test 1.1', part1, 17, test_input_1)
     print()
 
     print('Test Part 2:')
@@ -54,7 +103,7 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    # run_part1(False)
+    run_part1(False)
     # run_part2(False)
 
 
