@@ -64,8 +64,37 @@ def part1(data):
     return len(paper)
 
 
+def paper_str(paper):
+    max_x = max_y = 0
+    for x, y in paper:
+        max_x = max(x, max_x)
+        max_y = max(y, max_y)
+
+    lines = []
+    for y in range(max_y + 1):
+        row = []
+        for x in range(max_x + 1):
+            if (x,y) in paper:
+                row.append('X')
+            else:
+                row.append(' ')
+        lines.append(row)
+    return "\n" + "\n".join(["".join(row) for row in lines]) 
+
+
 def part2(data):
-    return None
+    paper, instructions = paper_and_instructions(data)
+    # print(paper)
+    # print(instructions)
+    for instruction in instructions:
+        if instruction[0] == 'x':
+            paper = fold_horiz(paper, instruction[1])
+        elif instruction[0] == 'y':
+            paper = fold_vert(paper, instruction[1])
+        else:
+            raise Exception(f'Unknown fold ({instruction[0]}).')
+    s = paper_str(paper)
+    return s
 
 
 def run_tests():
@@ -103,8 +132,8 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    run_part1(False)
-    # run_part2(False)
+    run_part1(True)
+    run_part2(False)
 
 
 if __name__ == '__main__':
