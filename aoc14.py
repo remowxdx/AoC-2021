@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import cairo
-import math
 from aoc import check_solution, save_solution, test_eq
 
 DAY = 14
@@ -34,8 +33,7 @@ def fast_polymer(polymer):
     result = {'_' + polymer[0]: 1, polymer[-1] + '_': 1}
     for i in range(len(polymer) - 1):
         pair = polymer[i] + polymer[i + 1]
-        if pair not in result:
-            result[pair] = 0
+        result.setdefault(pair, 0)
         result[pair] += 1
     return result
 
@@ -47,15 +45,12 @@ def apply_rules(polymer, rules):
             first = pair[0]
             second = pair[1]
             middle = rules[pair]
-            if first + middle not in new_polymer:
-                new_polymer[first + middle] = 0
-            if middle + second not in new_polymer:
-                new_polymer[middle + second] = 0
+            new_polymer.setdefault(first + middle, 0)
+            new_polymer.setdefault(middle + second, 0)
             new_polymer[first + middle] += count
             new_polymer[middle + second] += count
         else:
-            if pair not in new_polymer:
-                new_polymer[pair] = 0
+            new_polymer.setdefault(pair, 0)
             new_polymer[pair] += count
     return new_polymer
 
@@ -66,8 +61,7 @@ def count_elements(polymer):
         for i in range(2):
             if pair[i] == '_':
                 continue
-            if pair[i] not in counts:
-                counts[pair[i]] = 0
+            counts.setdefault(pair[i], 0)
             counts[pair[i]] += count
     for element in counts:
         counts[element] //= 2
@@ -86,8 +80,7 @@ def part1(data):
 def add_counts(polymer, counts_history, step):
     counts = count_elements(polymer)
     for element, count in counts.items():
-        if element not in counts_history:
-            counts_history[element] = [0] * step
+        counts_history.setdefault(element, [0] * step)
         counts_history[element].append(count)
 
 
@@ -104,6 +97,7 @@ def letter_to_color(letter):
         (0.0, 0.0, 1.0 - shade),
     ]
     return colors[color]
+
 
 def draw_history(ctx, history, element, max_y):
     scale_x = 650 / len(history)
