@@ -109,3 +109,12 @@ Look at [map of the caves](images/day12.svg).
 Finding the [infrared camera code](https://adventofcode.com/2021/day/13)!
 
 Today I simply drew every step of the [transparent dotted paper](images/day13.svg).
+
+
+## Day 14
+
+Synthetizing the [optimal polymer](https://adventofcode.com/2021/day/14)!
+
+Look at graph of the quantity of the [elements in the polymer](images/day14.svg) during the growth.
+We have Nitrogen, Oxygen, Vanadium, Fluorine, Boron, Potassium (K), Sulfur, Hydrogen and Phosphorus.
+
