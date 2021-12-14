@@ -11,8 +11,49 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def template_and_rules(lines):
+    template = list(lines[0])
+
+    rules = {}
+    skip = True
+    for line in lines:
+        if skip:
+            if len(line) == 0:
+                skip = False
+            continue
+
+        pair, insertion = line.split(' -> ')
+        rules[pair] = insertion
+
+    return template, rules
+
+
+def apply_rules(polymer, rules):
+    new_polymer = []
+    for i in range(len(polymer) - 1):
+        new_polymer.append(polymer[i])
+        pair = polymer[i] + polymer[i + 1]
+        if pair in rules:
+            new_polymer.append(rules[pair])
+    new_polymer.append(polymer[i + 1])
+    return new_polymer
+
+
+def count_elements(polymer):
+    count = {}
+    for element in polymer:
+        if element not in count:
+            count[element] = 0
+        count[element] += 1
+    return count
+
+
 def part1(data):
-    return None
+    polymer, rules = template_and_rules(data)
+    for _ in range(10):
+        polymer = apply_rules(polymer, rules)
+    count = count_elements(polymer)
+    return max(count.values()) - min(count.values())
 
 
 def part2(data):
@@ -22,7 +63,7 @@ def part2(data):
 def run_tests():
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', part1, 42, test_input_1)
+    test_eq('Test 1.1', part1, 1588, test_input_1)
     print()
 
     print('Test Part 2:')
@@ -54,7 +95,7 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    # run_part1(False)
+    run_part1(True)
     # run_part2(False)
 
 
