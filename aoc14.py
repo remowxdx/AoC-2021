@@ -28,28 +28,53 @@ def template_and_rules(lines):
     return template, rules
 
 
-def apply_rules(polymer, rules):
-    new_polymer = []
+def fast_polymer(polymer):
+    result = {'_' + polymer[0]: 1, polymer[-1] + '_': 1}
     for i in range(len(polymer) - 1):
-        new_polymer.append(polymer[i])
         pair = polymer[i] + polymer[i + 1]
+        if pair not in result:
+            result[pair] = 0
+        result[pair] += 1
+    return result
+
+
+def apply_rules(polymer, rules):
+    new_polymer = {}
+    for pair, count in polymer.items():
         if pair in rules:
-            new_polymer.append(rules[pair])
-    new_polymer.append(polymer[i + 1])
+            first = pair[0]
+            second = pair[1]
+            middle = rules[pair]
+            if first + middle not in new_polymer:
+                new_polymer[first + middle] = 0
+            if middle + second not in new_polymer:
+                new_polymer[middle + second] = 0
+            new_polymer[first + middle] += count
+            new_polymer[middle + second] += count
+        else:
+            if pair not in new_polymer:
+                new_polymer[pair] = 0
+            new_polymer[pair] += count
     return new_polymer
 
 
 def count_elements(polymer):
     count = {}
-    for element in polymer:
-        if element not in count:
-            count[element] = 0
-        count[element] += 1
+    for pair, num in polymer.items():
+        for i in range(2):
+            if pair[i] == '_':
+                continue
+            if pair[i] not in count:
+                count[pair[i]] = 0
+            count[pair[i]] += num
+    for element, num in count.items():
+        count[element] //= 2
     return count
 
 
 def part1(data):
-    polymer, rules = template_and_rules(data)
+    slow_polymer, rules = template_and_rules(data)
+    polymer = fast_polymer(slow_polymer)
     for _ in range(10):
         polymer = apply_rules(polymer, rules)
     count = count_elements(polymer)
@@ -57,7 +82,12 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    slow_polymer, rules = template_and_rules(data)
+    polymer = fast_polymer(slow_polymer)
+    for _ in range(40):
+        polymer = apply_rules(polymer, rules)
+    count = count_elements(polymer)
+    return max(count.values()) - min(count.values())
 
 
 def run_tests():
@@ -67,7 +97,7 @@ def run_tests():
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', part2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 2188189693529, test_input_1)
     print()
 
 
@@ -96,7 +126,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(True)
 
 
 if __name__ == '__main__':
