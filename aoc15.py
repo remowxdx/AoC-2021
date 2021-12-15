@@ -27,12 +27,13 @@ def risk_of(cavern, path):
 
 def find_neighbors(cavern, pos):
     neighbors = []
+    end = (len(cavern) - 1, len(cavern[0]) - 1)
     for direction in [(0, 1), (1, 0), (-1, 0), (0, -1)]:
-        new_pos = (pos[0] + direction[0], pos[1] + direction[1])
-        if new_pos[0] >= 0 and new_pos[1] >= 0:
-            if new_pos[0] < len(cavern[0]) and new_pos[1] < len(cavern):
-                neighbors.append(new_pos)
-    return neighbors
+        neighbor = (pos[0] + direction[0], pos[1] + direction[1])
+        if neighbor[0] >= 0 and neighbor[1] >= 0:
+            if neighbor[0] < len(cavern) and neighbor[1] < len(cavern[neighbor[0]]):
+                neighbors.append(((end[0] - neighbor[0]) ** 2 + (end[1] - neighbor[1]) ** 2, neighbor))
+    return [pos for dist, pos in sorted(neighbors, key=lambda el: el[0])]
 
 
 def find_lowest_risks(cavern, start):

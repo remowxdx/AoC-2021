@@ -118,3 +118,10 @@ Synthetizing the [optimal polymer](https://adventofcode.com/2021/day/14)!
 Look at graph of the quantity of the [elements in the polymer](images/day14.svg) during the growth.
 We have Nitrogen, Oxygen, Vanadium, Fluorine, Boron, Potassium (K), Sulfur, Hydrogen and Phosphorus.
 
+
+## Day 15
+
+Will I ever [exit the cave](https://adventofcode.com/2021/day/15)?
+
+Ideally I would show the lowest risk path to the exit, but this puzzle took me (and my computer)
+too much time and effort to solve. So no images!
