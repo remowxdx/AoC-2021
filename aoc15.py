@@ -38,11 +38,11 @@ def find_neighbors(cavern, pos):
 def find_lowest_risks(cavern, start):
 
     lowest_risks = {start: 0}
-    to_visit = [start]
+    to_visit = set([start])
     max_pos = (0, 0)
 
     while len(to_visit) > 0:
-        pos = to_visit.pop(0)
+        pos = to_visit.pop()
         total_risk = lowest_risks[pos]
         if pos[0] + pos[1] >= max_pos[0] + max_pos[1]:
             max_pos = pos
@@ -52,7 +52,7 @@ def find_lowest_risks(cavern, start):
             if neighbor not in lowest_risks or lowest_risks[neighbor] > neighbor_total_risk:
                 lowest_risks[neighbor] = neighbor_total_risk
                 if neighbor not in to_visit:
-                    to_visit.append(neighbor)
+                    to_visit.add(neighbor)
     return lowest_risks
 
 
