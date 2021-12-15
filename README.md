@@ -123,5 +123,5 @@ We have Nitrogen, Oxygen, Vanadium, Fluorine, Boron, Potassium (K), Sulfur, Hydr
 
 Will I ever [exit the cave](https://adventofcode.com/2021/day/15)?
 
-Ideally I would show the lowest risk path to the exit, but this puzzle took me (and my computer)
-too much time and effort to solve. So no images!
+And here is [the lowest risk path to the exit](images/day15.png) and the lowest total risk to reach
+each position from blue (low risk) to red (highest risk).
