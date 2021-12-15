@@ -37,29 +37,51 @@ def find_neighbors(cavern, pos):
 
 def find_lowest_risks(cavern, start):
 
-    lowest_risks = {}
-    to_visit = [(start, 0)]
+    lowest_risks = {start: 0}
+    to_visit = [start]
+    max_pos = (0, 0)
 
     while len(to_visit) > 0:
-        pos, total_risk = to_visit.pop(0)
-        # pos_risk = cavern[pos[0]][pos[1]]
-
+        pos = to_visit.pop(0)
+        total_risk = lowest_risks[pos]
+        if pos[0] + pos[1] >= max_pos[0] + max_pos[1]:
+            max_pos = pos
+            print(pos, lowest_risks[pos], len(to_visit), len(lowest_risks))
         for neighbor in find_neighbors(cavern, pos):
-            neighbor_risk = cavern[neighbor[0]][neighbor[1]]
-            if neighbor not in lowest_risks or lowest_risks[neighbor] > neighbor_risk + total_risk:
-                lowest_risks[neighbor] = neighbor_risk + total_risk
-                to_visit.append((neighbor, neighbor_risk + total_risk))
+            neighbor_total_risk = cavern[neighbor[0]][neighbor[1]] + total_risk
+            if neighbor not in lowest_risks or lowest_risks[neighbor] > neighbor_total_risk:
+                lowest_risks[neighbor] = neighbor_total_risk
+                if neighbor not in to_visit:
+                    to_visit.append(neighbor)
     return lowest_risks
+
+
+def make_big_cavern(small_cavern):
+    cavern = []
+    for j in range(5):
+        for y, row in enumerate(small_cavern):
+            cavern_row = []
+            for i in range(5):
+                for x, risk in enumerate(row):
+                    cavern_row.append((risk + i + j - 1) % 9 + 1)
+            cavern.append(cavern_row)
+    return cavern
 
 
 def part1(data):
     cavern = make_cavern(data)
     lowest_risks = find_lowest_risks(cavern, (0, 0))
+    # print("\n".join(["".join([f'{lowest_risks[(y, x)]:3}' for x in range(len(cavern[y]))]) for y in range(len(cavern))]))
     return lowest_risks[len(cavern) - 1, len(cavern[0]) - 1]
 
 
 def part2(data):
-    return None
+    small_cavern = make_cavern(data)
+    cavern = make_big_cavern(small_cavern)
+    # print(cavern)
+    # print("\n".join(["".join([str(r) for r in row]) for row in cavern]))
+    lowest_risks = find_lowest_risks(cavern, (0, 0))
+    return lowest_risks[len(cavern) - 1, len(cavern[0]) - 1]
 
 
 def run_tests():
@@ -69,7 +91,7 @@ def run_tests():
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', part2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 315, test_input_1)
     print()
 
 
@@ -98,7 +120,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(True)
 
 
 if __name__ == '__main__':
