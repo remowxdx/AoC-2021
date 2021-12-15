@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from heapq import heappush, heappop
 from aoc import check_solution, save_solution, test_eq
 
 DAY = 15
@@ -39,12 +40,12 @@ def find_neighbors(cavern, pos):
 def find_lowest_risks(cavern, start):
 
     lowest_risks = {start: 0}
-    to_visit = set([start])
+    to_visit = []
+    heappush(to_visit, (0, start))
     max_pos = (0, 0)
 
     while len(to_visit) > 0:
-        pos = to_visit.pop()
-        total_risk = lowest_risks[pos]
+        total_risk, pos = heappop(to_visit)
         if pos[0] + pos[1] >= max_pos[0] + max_pos[1]:
             max_pos = pos
             print(pos, lowest_risks[pos], len(to_visit), len(lowest_risks))
@@ -52,8 +53,7 @@ def find_lowest_risks(cavern, start):
             neighbor_total_risk = cavern[neighbor[0]][neighbor[1]] + total_risk
             if neighbor not in lowest_risks or lowest_risks[neighbor] > neighbor_total_risk:
                 lowest_risks[neighbor] = neighbor_total_risk
-                if neighbor not in to_visit:
-                    to_visit.add(neighbor)
+                heappush(to_visit, (neighbor_total_risk, neighbor))
     return lowest_risks
 
 
