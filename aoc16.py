@@ -85,6 +85,32 @@ def parse_packet(bmsg, pos):
                 subpacket, pos = parse_packet(bmsg, pos)
                 packet['subpackets'].append(subpacket)
                 # print(pos, num_packet)
+        if packet['type_id'] == 0:
+            packet['value'] = sum([subpacket['value'] for subpacket in packet['subpackets']])
+        elif packet['type_id'] == 1:
+            prod = 1
+            for subpacket in packet['subpackets']:
+                prod *= subpacket['value']
+            packet['value'] = prod
+        elif packet['type_id'] == 2:
+            packet['value'] = min([subpacket['value'] for subpacket in packet['subpackets']])
+        elif packet['type_id'] == 3:
+            packet['value'] = max([subpacket['value'] for subpacket in packet['subpackets']])
+        elif packet['type_id'] == 5:
+            if packet['subpackets'][0]['value'] > packet['subpackets'][1]['value']:
+                packet['value'] = 1
+            else:
+                packet['value'] = 0
+        elif packet['type_id'] == 6:
+            if packet['subpackets'][0]['value'] < packet['subpackets'][1]['value']:
+                packet['value'] = 1
+            else:
+                packet['value'] = 0
+        elif packet['type_id'] == 7:
+            if packet['subpackets'][0]['value'] == packet['subpackets'][1]['value']:
+                packet['value'] = 1
+            else:
+                packet['value'] = 0
     return packet, pos
 
 
@@ -103,7 +129,10 @@ def part1(data):
 
 
 def part2(data):
-    return None
+    binary = to_binary(data[0])
+    packet, pos = parse_packet(binary, 0)
+    # print(packet, pos, binary[pos:])
+    return packet['value']
 
 
 def run_tests():
@@ -119,7 +148,14 @@ def run_tests():
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', part2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 3, ['C200B40A82'])
+    test_eq('Test 2.2', part2, 54, ['04005AC33890'])
+    test_eq('Test 2.3', part2, 7, ['880086C3E88112'])
+    test_eq('Test 2.4', part2, 9, ['CE00C43D881120'])
+    test_eq('Test 2.5', part2, 1, ['D8005AC2A8F0'])
+    test_eq('Test 2.6', part2, 0, ['F600BC2D8F'])
+    test_eq('Test 2.7', part2, 0, ['9C005AC2F8F0'])
+    test_eq('Test 2.8', part2, 1, ['9C0141080250320F1802104A08'])
     print()
 
 
@@ -148,7 +184,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(True)
 
 
 if __name__ == '__main__':
