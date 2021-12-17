@@ -83,10 +83,12 @@ def run_tests():
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
     test_eq('Test 1.1', part1, 45, test_input_1)
+    test_eq('Test 1.2', part1, 66, ['target area: x=352..377, y=-49..-30'])
     print()
 
     print('Test Part 2:')
     test_eq('Test 2.1', part2, 112, test_input_1)
+    test_eq('Test 2.2', part2, 820, ['target area: x=352..377, y=-49..-30'])
     print()
 
 
