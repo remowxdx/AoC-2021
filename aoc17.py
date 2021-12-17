@@ -54,18 +54,29 @@ def part1(data):
 # v_x² + v_x - 2*a_0 >= 0
 # (-v_x +- sqrt(v_x² - 4*2*a_0)) / 2
     min_vx = math.floor((-1 + math.sqrt(1 + 4 * 2 * area[0])) / 2)
-    print(min_vx, area[2] + 1, area[1] - area[3])
+    # print(min_vx, area[2] + 1, area[1] - area[3])
     for vx in range(min_vx, area[2] + 1):
         for vy in range(0, -area[3]):
             ok, cur_max_y = hits(vx, vy, area)
             if ok and cur_max_y > max_y:
                 max_y = cur_max_y
-            print(vx, vy, cur_max_y)
+            # print(vx, vy, cur_max_y)
     return max_y
 
 
 def part2(data):
-    return None
+    area = read_target_area(data)
+# v_x² + v_x - 2*a_0 >= 0
+# (-v_x +- sqrt(v_x² - 4*2*a_0)) / 2
+    min_vx = math.floor((-1 + math.sqrt(1 + 4 * 2 * area[0])) / 2)
+    count_hits = 0
+    for vx in range(min_vx, area[2] + 1):
+        for vy in range(area[3], -area[3]):
+            ok, _ = hits(vx, vy, area)
+            if ok:
+                count_hits += 1
+                # print(vx, vy)
+    return count_hits
 
 
 def run_tests():
@@ -75,7 +86,7 @@ def run_tests():
     print()
 
     print('Test Part 2:')
-    test_eq('Test 2.1', part2, 42, test_input_1)
+    test_eq('Test 2.1', part2, 112, test_input_1)
     print()
 
 
@@ -104,7 +115,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(True)
 
 
 if __name__ == '__main__':
