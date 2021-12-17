@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import cairo
+import math
 from aoc import check_solution, save_solution, test_eq
 
 DAY = 16
@@ -142,6 +144,47 @@ def sum_versions(packet):
     return versions
 
 
+def draw_packets(packet):
+    surface = cairo.SVGSurface('images/day16.svg', 1900, 1800)
+    ctx = cairo.Context(surface)
+    ctx.select_font_face('Sans Serif')
+    ctx.set_font_size(12)
+
+    ctx.set_source_rgb(0.9, 0.9, 0.8)
+    ctx.rectangle(1, 1, 1899, 1299)
+    ctx.fill()
+    draw_packet(ctx, packet, 950, 30, 1800)
+
+    surface.flush()
+    surface.finish()
+
+
+def draw_packet(ctx, packet, x, y, width):
+    num_sp = len(packet['subpackets'])
+    if num_sp != 0:
+        ctx.set_source_rgb(0.0, 0.0, 0.0)
+        ctx.set_line_width(1)
+        step_len = width / (num_sp + 1)
+        for i, subpacket in enumerate(packet['subpackets']):
+            ctx.move_to(x, y)
+            next_x = x - (num_sp / 2 - i) * step_len
+            next_y = y + math.pow(width, 0.3) * 50
+            ctx.line_to(next_x, next_y)
+            ctx.stroke()
+            draw_packet(ctx, subpacket, next_x, next_y, step_len)
+    ctx.set_source_rgb(1.0, 1.0, 1.0)
+    ctx.arc(x, y, 20, 0, 2 * math.pi)
+    ctx.fill()
+    ctx.set_source_rgb(0.0, 0.0, 0.0)
+    ctx.arc(x, y, 20, 0, 2 * math.pi)
+    ctx.stroke()
+    ctx.move_to(x - 10, y - 2)
+    type_sym = ['+', '*', 'mn', 'mx', 'v', '>', '<', '=']
+    ctx.show_text(f"{type_sym[packet['type_id']]}")
+    ctx.move_to(x - 17, y + 10)
+    ctx.show_text(f"{packet['value']}")
+
+
 def part1(data):
     binary = to_binary(data[0])
     packet, _pos = parse_packet(binary, 0)
@@ -152,7 +195,7 @@ def part1(data):
 def part2(data):
     binary = to_binary(data[0])
     packet, _pos = parse_packet(binary, 0)
-    # print(packet, pos, binary[pos:])
+    draw_packets(packet)
     return packet['value']
 
 
@@ -204,8 +247,8 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    # run_part1(True)
-    # run_part2(True)
+    run_part1(True)
+    run_part2(True)
 
 
 if __name__ == '__main__':

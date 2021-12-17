@@ -125,3 +125,10 @@ Will I ever [exit the cave](https://adventofcode.com/2021/day/15)?
 
 And here is [the lowest risk path to the exit](images/day15.png) and the lowest total risk to reach
 each position from blue (low risk) to red (highest risk).
+
+
+## Day 16
+
+Decode [BITS messages](https://adventofcode.com/2021/day/16)!
+
+Do not look at the _bad_ [packet visualisation](images/day16.svg) of the received message.
