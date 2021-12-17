@@ -11,7 +11,7 @@ def get_input(filename):
     return lines.splitlines()
 
 
-hex_to_bin = {
+HEX_TO_BIN = {
     '0': '0000',
     '1': '0001',
     '2': '0010',
@@ -35,7 +35,7 @@ def to_binary(packet):
     binary = []
     print(packet)
     for char in packet:
-        binary.append(hex_to_bin[char])
+        binary.append(HEX_TO_BIN[char])
     return "".join(binary)
 
 
@@ -59,6 +59,70 @@ def parse_literal(bmsg, pos):
     return to_num("".join(literal_value)), pos
 
 
+def parse_operator(bmsg, pos, packet):
+    packet['lenght_type_id'] = to_num(bmsg[pos])
+    if packet['lenght_type_id'] == 0:
+        packet['subpackets_bit_length'] = to_num(bmsg[pos + 1:pos + 16])
+        pos += 16
+        parse_to = pos + packet['subpackets_bit_length']
+        # print(pos, parse_to)
+        while pos < parse_to:
+            subpacket, pos = parse_packet(bmsg, pos)
+            packet['subpackets'].append(subpacket)
+            # print(pos, parse_to)
+    else:
+        packet['subpackets_num'] = to_num(bmsg[pos + 1:pos + 12])
+        # print(bmsg[pos + 1:pos + 12])
+        pos += 12
+        for _ in range(packet['subpackets_num']):
+            subpacket, pos = parse_packet(bmsg, pos)
+            packet['subpackets'].append(subpacket)
+            # print(pos, num_packet)
+
+    calc_value(packet)
+    return packet['value'], pos
+
+
+def multiply_packet_values(packets):
+    prod = 1
+    for packet in packets:
+        prod *= packet['value']
+    return prod
+
+
+def packet_greater(packets):
+    if packets[0]['value'] > packets[1]['value']:
+        return 1
+    return 0
+
+
+def packet_less(packets):
+    if packets[0]['value'] < packets[1]['value']:
+        return 1
+    return 0
+
+
+def packet_equal(packets):
+    if packets[0]['value'] == packets[1]['value']:
+        return 1
+    return 0
+
+
+def calc_value(packet):
+    packet_type_operation = {
+        0: lambda packets: sum([packet['value'] for packet in packets]),
+        1: multiply_packet_values,
+        2: lambda packets: min([packet['value'] for packet in packets]),
+        3: lambda packets: max([packet['value'] for packet in packets]),
+        5: packet_greater,
+        6: packet_less,
+        7: packet_equal,
+    }
+    subpackets = packet['subpackets']
+    packet['value'] = packet_type_operation[packet['type_id']](subpackets)
+    return packet['value']
+
+
 def parse_packet(bmsg, pos):
     packet = {'subpackets': []}
     packet['version'] = to_num(bmsg[pos:pos + 3])
@@ -67,50 +131,7 @@ def parse_packet(bmsg, pos):
     if packet['type_id'] == 4:
         packet['value'], pos = parse_literal(bmsg, pos)
     else:
-        packet['lenght_type_id'] = to_num(bmsg[pos])
-        if packet['lenght_type_id'] == 0:
-            packet['subpackets_bit_length'] = to_num(bmsg[pos + 1:pos + 16])
-            pos += 16
-            parse_to = pos + packet['subpackets_bit_length']
-            # print(pos, parse_to)
-            while pos < parse_to:
-                subpacket, pos = parse_packet(bmsg, pos)
-                packet['subpackets'].append(subpacket)
-                # print(pos, parse_to)
-        else:
-            packet['subpackets_num'] = to_num(bmsg[pos + 1:pos + 12])
-            # print(bmsg[pos + 1:pos + 12])
-            pos += 12
-            for num_packet in range(packet['subpackets_num']):
-                subpacket, pos = parse_packet(bmsg, pos)
-                packet['subpackets'].append(subpacket)
-                # print(pos, num_packet)
-        if packet['type_id'] == 0:
-            packet['value'] = sum([subpacket['value'] for subpacket in packet['subpackets']])
-        elif packet['type_id'] == 1:
-            prod = 1
-            for subpacket in packet['subpackets']:
-                prod *= subpacket['value']
-            packet['value'] = prod
-        elif packet['type_id'] == 2:
-            packet['value'] = min([subpacket['value'] for subpacket in packet['subpackets']])
-        elif packet['type_id'] == 3:
-            packet['value'] = max([subpacket['value'] for subpacket in packet['subpackets']])
-        elif packet['type_id'] == 5:
-            if packet['subpackets'][0]['value'] > packet['subpackets'][1]['value']:
-                packet['value'] = 1
-            else:
-                packet['value'] = 0
-        elif packet['type_id'] == 6:
-            if packet['subpackets'][0]['value'] < packet['subpackets'][1]['value']:
-                packet['value'] = 1
-            else:
-                packet['value'] = 0
-        elif packet['type_id'] == 7:
-            if packet['subpackets'][0]['value'] == packet['subpackets'][1]['value']:
-                packet['value'] = 1
-            else:
-                packet['value'] = 0
+        _value, pos = parse_operator(bmsg, pos, packet)
     return packet, pos
 
 
@@ -123,14 +144,14 @@ def sum_versions(packet):
 
 def part1(data):
     binary = to_binary(data[0])
-    packet, pos = parse_packet(binary, 0)
+    packet, _pos = parse_packet(binary, 0)
     # print(packet, pos, binary[pos:])
     return sum_versions(packet)
 
 
 def part2(data):
     binary = to_binary(data[0])
-    packet, pos = parse_packet(binary, 0)
+    packet, _pos = parse_packet(binary, 0)
     # print(packet, pos, binary[pos:])
     return packet['value']
 
@@ -183,8 +204,8 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    run_part1(True)
-    run_part2(True)
+    # run_part1(True)
+    # run_part2(True)
 
 
 if __name__ == '__main__':
