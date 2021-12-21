@@ -11,8 +11,36 @@ def get_input(filename):
     return lines.splitlines()
 
 
+def players_start_positions(lines):
+    players = []
+    for line in lines:
+        _, pos = line.split(': ')
+        players.append([int(pos), 0])
+    return players
+
+
+def roll(step):
+    return 9 * step + 6
+
+
+def step_player(player, step):
+    player[0] = (player[0] + roll(step) - 1) % 10 + 1
+    player[1] += player[0]
+
+
 def part1(data):
-    return None
+    players = players_start_positions(data)
+    current_player = 0
+    step = 0
+    while True:
+        step_player(players[current_player], step)
+        wins = players[current_player][1] >= 1_000
+        current_player = (current_player + 1) % 2
+        if wins:
+            break
+        # print(players)
+        step += 1
+    return players[current_player][1] * (step + 1) * 3
 
 
 def part2(data):
@@ -22,7 +50,7 @@ def part2(data):
 def run_tests():
     test_input_1 = get_input(f'ex{DAY}')
     print('Test Part 1:')
-    test_eq('Test 1.1', part1, 42, test_input_1)
+    test_eq('Test 1.1', part1, 739_785, test_input_1)
     print()
 
     print('Test Part 2:')
@@ -54,7 +82,7 @@ def run_part2(solved):
 
 def main():
     run_tests()
-    # run_part1(False)
+    run_part1(True)
     # run_part2(False)
 
 
