@@ -117,6 +117,7 @@ def test_rotations():
 
 
 def part1(data):
+    return None
     scanners = read_scanners(data)
     beacons = scanners[0][:]
     print(scanners)
@@ -155,8 +156,19 @@ def part1(data):
     return len(all_beacons)
 
 
+def manhattan_distance(scanner1, scanner2):
+    return sum([abs(scanner1[i] - scanner2[i]) for i in range(3)])
+
 def part2(data):
-    return None
+    scanners_str = get_input('output19')
+    scanners = [tuple([int(n) for n in line.split(', ')]) for line in scanners_str]
+    print(scanners)
+    max_md = 0
+    for i in range(len(scanners) - 1):
+        for j in range(i + 1, len(scanners)):
+            md = manhattan_distance(scanners[i], scanners[j])
+            max_md = max(md, max_md)
+    return max_md
 
 
 def run_tests():
@@ -195,7 +207,7 @@ def run_part2(solved):
 def main():
     run_tests()
     run_part1(True)
-    # run_part2(False)
+    run_part2(False)
 
 
 if __name__ == '__main__':
